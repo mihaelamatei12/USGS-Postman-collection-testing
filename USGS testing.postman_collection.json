@@ -1,0 +1,442 @@
+{
+	"info": {
+		"_postman_id": "8b801b21-90b2-4f13-b473-fdd1707ba414",
+		"name": "USGS testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28890200"
+	},
+	"item": [
+		{
+			"name": "Earthquake",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.test(\"Status is 200\", function() {\r",
+							"//     pm.response.to.have.status(200);\r",
+							"// });\r",
+							"\r",
+							"pm.test(\"Status is OK\", function() {\r",
+							"    pm.expect(pm.response.status).to.eql(\"OK\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The number is prime\", () => {\r",
+							"    //const response = pm.response.json();\r",
+							"    const response = 38;\r",
+							"    let primeNumber = true;\r",
+							"    for(let i = 2; i < Math.sqrt(response); i++){\r",
+							"        if( response % i == 0 ){\r",
+							"            primeNumber = false;\r",
+							"        }\r",
+							"    }\r",
+							"    pm.expect(primeNumber).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/count?starttime={{starttime}}&endtime={{endtime}}",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"count"
+					],
+					"query": [
+						{
+							"key": "starttime",
+							"value": "{{starttime}}"
+						},
+						{
+							"key": "endtime",
+							"value": "{{endtime}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "earthquake bad request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.environment.get(\"starttime\");\r",
+							"// pm.environment.get(\"endtime\");\r",
+							"\r",
+							"pm.test(\"It is a bad request\", () => {\r",
+							"    pm.response.to.have.status(400);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Status is OK\", function() {\r",
+							"    pm.expect(pm.response.status).to.eql(\"OK\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"It is type JSON?\", function(){\r",
+							"     const content = pm.response.headers.get(['Content-Type']);\r",
+							"     console.log(content);\r",
+							"    pm.expect(content).to.eqls(\"application/json\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/count?startime={{starttime}}&endtime={{endtime}}",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"count"
+					],
+					"query": [
+						{
+							"key": "startime",
+							"value": "{{starttime}}"
+						},
+						{
+							"key": "endtime",
+							"value": "{{endtime}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Earthquake perioada cutremuratoare",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" const maxEarthquakes = pm.environment.get(\"maxearthquakes\");\r",
+							" const maxTsunamis = pm.environment.get(\"maxtsunamis\");\r",
+							" const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Too many earthquakes/ zi cutremuratoare!\", function() {\r",
+							"    // console.log(response['features'].length);\r",
+							"    // console.log(maxEarthquakes);\r",
+							"    pm.expect(response['features'].length > maxEarthquakes).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// 7.\r",
+							"\r",
+							"pm.test(\"Marea umezeala\", function() {\r",
+							"    let nrOfTsunamis = 0;\r",
+							"    for(let i = 0; i < response.features.length; i++){\r",
+							"        nrOfTsunamis += response.features[i].properties['tsunami'];\r",
+							"    }\r",
+							"    pm.expect(nrOfTsunamis > maxTsunamis).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/query?starttime={{starttime}}&endtime={{endtime}}&format=geojson",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"query"
+					],
+					"query": [
+						{
+							"key": "starttime",
+							"value": "{{starttime}}"
+						},
+						{
+							"key": "endtime",
+							"value": "{{endtime}}"
+						},
+						{
+							"key": "format",
+							"value": "geojson"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shattering period in a zone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const minLatitude = pm.environment.get(\"minlatitude\");\r",
+							"const minLongitude = pm.environment.get(\"minlongitutde\");\r",
+							"const maxLatitude = pm.environment.get(\"maxlatitude\");\r",
+							"const maxLongitude = pm.environment.get(\"maxlongitude\");\r",
+							"const maxMagnitude = pm.environment.get(\"maxmagnitude\");\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Perioada cutremuratoare intr-o zona data\",function() {\r",
+							"    let magnitute = 0;\r",
+							"    for(let i = 0; i < response.features.length; i++){\r",
+							"        if( magnitute < response.features[i].properties['mag']){\r",
+							"            magnitute = response.features[i].properties['mag'];\r",
+							"        } \r",
+							"    }\r",
+							"    pm.expect( magnitute > maxMagnitude).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/query?minlatitude={{minlatitude}}&minlongitude={{minlongitutde}}&maxlatitude={{maxlatitude}}&maxlongitude={{maxlongitude}}&starttime={{starttime}}&endtime={{endtime}}&format=geojson",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"query"
+					],
+					"query": [
+						{
+							"key": "minlatitude",
+							"value": "{{minlatitude}}"
+						},
+						{
+							"key": "minlongitude",
+							"value": "{{minlongitutde}}"
+						},
+						{
+							"key": "maxlatitude",
+							"value": "{{maxlatitude}}"
+						},
+						{
+							"key": "maxlongitude",
+							"value": "{{maxlongitude}}"
+						},
+						{
+							"key": "starttime",
+							"value": "{{starttime}}"
+						},
+						{
+							"key": "endtime",
+							"value": "{{endtime}}"
+						},
+						{
+							"key": "format",
+							"value": "geojson"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Earthquakes in Romania",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" const response = pm.response.json();\r",
+							"\r",
+							" pm.test(\"Earthquakes in Romania\", function() {\r",
+							"     const earthquakesInRomania = response.features.map( feature => feature['properties']['place']).filter(place => place.includes(\"Romania\")).length;\r",
+							"     console.log(earthquakesInRomania);\r",
+							"     pm.expect(earthquakesInRomania > 2).to.be.true;\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/query?starttime=1977-03-04&endtime=1977-03-05&format=geojson",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"query"
+					],
+					"query": [
+						{
+							"key": "starttime",
+							"value": "1977-03-04"
+						},
+						{
+							"key": "endtime",
+							"value": "1977-03-05"
+						},
+						{
+							"key": "format",
+							"value": "geojson"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "starttime",
+			"value": "2020-01-01"
+		},
+		{
+			"key": "endtime",
+			"value": "2020-01-02",
+			"type": "string"
+		},
+		{
+			"key": "minlatitude",
+			"value": "-90",
+			"type": "string"
+		},
+		{
+			"key": "maxlatitude",
+			"value": "90",
+			"type": "string"
+		},
+		{
+			"key": "maxlongitude",
+			"value": "180",
+			"type": "string"
+		},
+		{
+			"key": "minlongitutde",
+			"value": "-180",
+			"type": "string"
+		},
+		{
+			"key": "maxmagnitude",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"key": "maxearthquakes",
+			"value": "600",
+			"type": "string"
+		},
+		{
+			"key": "maxtsunamis",
+			"value": "5",
+			"type": "string"
+		}
+	]
+}

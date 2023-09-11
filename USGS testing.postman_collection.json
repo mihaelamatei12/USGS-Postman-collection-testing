@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Earthquake",
+			"name": "Verify status",
 			"event": [
 				{
 					"listen": "test",
@@ -78,15 +78,12 @@
 			"response": []
 		},
 		{
-			"name": "earthquake bad request",
+			"name": "Verify request",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// pm.environment.get(\"starttime\");\r",
-							"// pm.environment.get(\"endtime\");\r",
-							"\r",
 							"pm.test(\"It is a bad request\", () => {\r",
 							"    pm.response.to.have.status(400);\r",
 							"})\r",
@@ -146,7 +143,7 @@
 			"response": []
 		},
 		{
-			"name": "Earthquake perioada cutremuratoare",
+			"name": "Exceeds the maximum number of earthquakes/tsunami",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -161,19 +158,17 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							" const maxEarthquakes = pm.environment.get(\"maxearthquakes\");\r",
-							" const maxTsunamis = pm.environment.get(\"maxtsunamis\");\r",
+							"const maxEarthquakes = pm.variables.get(\"maxearthquakes\");\r",
+							"const maxTsunamis = pm.variables.get(\"maxtsunamis\");\r",
 							" const response = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Too many earthquakes/ zi cutremuratoare!\", function() {\r",
-							"    // console.log(response['features'].length);\r",
-							"    // console.log(maxEarthquakes);\r",
+							"pm.test(\"Exceeds the maximum number of earthquakes\", function() {\r",
 							"    pm.expect(response['features'].length > maxEarthquakes).to.be.true;\r",
 							"});\r",
 							"\r",
 							"// 7.\r",
 							"\r",
-							"pm.test(\"Marea umezeala\", function() {\r",
+							"pm.test(\"Exceeds the maximum number of tsunamis\", function() {\r",
 							"    let nrOfTsunamis = 0;\r",
 							"    for(let i = 0; i < response.features.length; i++){\r",
 							"        nrOfTsunamis += response.features[i].properties['tsunami'];\r",
@@ -227,20 +222,20 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"const minLatitude = pm.environment.get(\"minlatitude\");\r",
-							"const minLongitude = pm.environment.get(\"minlongitutde\");\r",
-							"const maxLatitude = pm.environment.get(\"maxlatitude\");\r",
-							"const maxLongitude = pm.environment.get(\"maxlongitude\");\r",
-							"const maxMagnitude = pm.environment.get(\"maxmagnitude\");\r",
+							"const minLatitude = pm.variables.get(\"minlatitude\");\r",
+							"const minLongitude = pm.variables.get(\"minlongitutde\");\r",
+							"const maxLatitude = pm.variables.get(\"maxlatitude\");\r",
+							"const maxLongitude = pm.variables.get(\"maxlongitude\");\r",
+							"const maxMagnitude = pm.variables.get(\"maxmagnitude\");\r",
 							"\r",
 							"const response = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Perioada cutremuratoare intr-o zona data\",function() {\r",
+							"pm.test(\"A shocking period in a given area\",function() {\r",
 							"    let magnitute = 0;\r",
 							"    for(let i = 0; i < response.features.length; i++){\r",
-							"        if( magnitute < response.features[i].properties['mag']){\r",
+							"       if( magnitute < response.features[i].properties['mag']){\r",
 							"            magnitute = response.features[i].properties['mag'];\r",
-							"        } \r",
+							"      } \r",
 							"    }\r",
 							"    pm.expect( magnitute > maxMagnitude).to.be.true;\r",
 							"});"
@@ -371,6 +366,68 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Number is prime",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"The number is prime\", () => {",
+							"    const response = pm.response.json();",
+							"    let primeNumber = true;",
+							"    for(let i = 2; i < Math.sqrt(response); i++){",
+							"        if( response % i == 0 ){",
+							"            primeNumber = false;",
+							"        }",
+							"    }",
+							"    pm.expect(primeNumber).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/count?starttime={{starttime}}&endtime={{endtime}}",
+					"protocol": "https",
+					"host": [
+						"earthquake",
+						"usgs",
+						"gov"
+					],
+					"path": [
+						"fdsnws",
+						"event",
+						"1",
+						"count"
+					],
+					"query": [
+						{
+							"key": "starttime",
+							"value": "{{starttime}}"
+						},
+						{
+							"key": "endtime",
+							"value": "{{endtime}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -435,7 +492,7 @@
 		},
 		{
 			"key": "maxtsunamis",
-			"value": "5",
+			"value": "1",
 			"type": "string"
 		}
 	]

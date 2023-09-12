@@ -13,17 +13,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// pm.test(\"Status is 200\", function() {\r",
-							"//     pm.response.to.have.status(200);\r",
-							"// });\r",
-							"\r",
 							"pm.test(\"Status is OK\", function() {\r",
 							"    pm.expect(pm.response.status).to.eql(\"OK\");\r",
 							"});\r",
 							"\r",
 							"pm.test(\"The number is prime\", () => {\r",
-							"    //const response = pm.response.json();\r",
-							"    const response = 38;\r",
+							"    const response = pm.response.json();\r",
 							"    let primeNumber = true;\r",
 							"    for(let i = 2; i < Math.sqrt(response); i++){\r",
 							"        if( response % i == 0 ){\r",
@@ -94,7 +89,6 @@
 							"\r",
 							"pm.test(\"It is type JSON?\", function(){\r",
 							"     const content = pm.response.headers.get(['Content-Type']);\r",
-							"     console.log(content);\r",
 							"    pm.expect(content).to.eqls(\"application/json\");\r",
 							"});"
 						],
@@ -158,20 +152,20 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"const maxEarthquakes = pm.variables.get(\"maxearthquakes\");\r",
-							"const maxTsunamis = pm.variables.get(\"maxtsunamis\");\r",
+							"const maxEarthquakes = pm.collectionVariables.get(\"maxearthquakes\");\r",
+							"const maxTsunamis = pm.collectionVariables.get(\"maxtsunamis\");\r",
 							" const response = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Exceeds the maximum number of earthquakes\", function() {\r",
 							"    pm.expect(response['features'].length > maxEarthquakes).to.be.true;\r",
 							"});\r",
 							"\r",
-							"// 7.\r",
-							"\r",
 							"pm.test(\"Exceeds the maximum number of tsunamis\", function() {\r",
 							"    let nrOfTsunamis = 0;\r",
 							"    for(let i = 0; i < response.features.length; i++){\r",
-							"        nrOfTsunamis += response.features[i].properties['tsunami'];\r",
+							"        if(response.features[i].properties['tsunami'] == 1){\r",
+							"            nrOfTsunamis++;\r",
+							"        }\r",
 							"    }\r",
 							"    pm.expect(nrOfTsunamis > maxTsunamis).to.be.true;\r",
 							"});"
@@ -222,11 +216,11 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"const minLatitude = pm.variables.get(\"minlatitude\");\r",
-							"const minLongitude = pm.variables.get(\"minlongitutde\");\r",
-							"const maxLatitude = pm.variables.get(\"maxlatitude\");\r",
-							"const maxLongitude = pm.variables.get(\"maxlongitude\");\r",
-							"const maxMagnitude = pm.variables.get(\"maxmagnitude\");\r",
+							"const minLatitude = pm.collectionVariables.get(\"minlatitude\");\r",
+							"const minLongitude = pm.collectionVariables.get(\"minlongitutde\");\r",
+							"const maxLatitude = pm.collectionVariables.get(\"maxlatitude\");\r",
+							"const maxLongitude = pm.collectionVariables.get(\"maxlongitude\");\r",
+							"const maxMagnitude = pm.collectionVariables.get(\"maxmagnitude\");\r",
 							"\r",
 							"const response = pm.response.json();\r",
 							"\r",
@@ -361,68 +355,6 @@
 						{
 							"key": "format",
 							"value": "geojson"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Number is prime",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"console.clear();"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"The number is prime\", () => {",
-							"    const response = pm.response.json();",
-							"    let primeNumber = true;",
-							"    for(let i = 2; i < Math.sqrt(response); i++){",
-							"        if( response % i == 0 ){",
-							"            primeNumber = false;",
-							"        }",
-							"    }",
-							"    pm.expect(primeNumber).to.be.true;",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://earthquake.usgs.gov/fdsnws/event/1/count?starttime={{starttime}}&endtime={{endtime}}",
-					"protocol": "https",
-					"host": [
-						"earthquake",
-						"usgs",
-						"gov"
-					],
-					"path": [
-						"fdsnws",
-						"event",
-						"1",
-						"count"
-					],
-					"query": [
-						{
-							"key": "starttime",
-							"value": "{{starttime}}"
-						},
-						{
-							"key": "endtime",
-							"value": "{{endtime}}"
 						}
 					]
 				}
